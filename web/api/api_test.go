@@ -62,6 +62,42 @@ func (suite *APITestSuite) TestUserGetRouter() {
 	suite.Equal("api_ut01", response.Name)
 }
 
+func (suite *APITestSuite) TestUserUnregisterRouter() {
+	w := httptest.NewRecorder()
+	req, err := http.NewRequest("GET", "/user/unregister/api_ut01", nil)
+	if err != nil {
+		suite.T().Fatal(err)
+	}
+	suite.router.ServeHTTP(w, req)
+	var body []byte
+	body, err = ioutil.ReadAll(w.Result().Body)
+	if err != nil {
+		suite.T().Fatal(err)
+	}
+
+	var response UserGetResponse
+	err = json.Unmarshal(body, &response)
+	if err != nil {
+		suite.T().Fatal(err)
+	}
+	
+	suite.Equal(200, w.Code)
+	suite.Equal("api_ut01", response.Name)
+
+	req, err = http.NewRequest("GET", "/user/get/api_ut01", nil)
+	if err != nil {
+		suite.T().Fatal(err)
+	}
+	suite.router.ServeHTTP(w, req)
+
+	body, err = ioutil.ReadAll(w.Result().Body)
+	if err != nil {
+		suite.T().Fatal(err)
+	}
+	
+	suite.Equal(404, w.Code)
+}
+
 func (suite *APITestSuite) TestUserRegisterRouter() {
 	w := httptest.NewRecorder()
 	req, err := http.NewRequest("GET", "/user/register/api_ut02", nil)
